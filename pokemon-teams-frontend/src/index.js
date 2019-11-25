@@ -34,16 +34,31 @@ function addTrainer(trainer) {
 
 
 main.addEventListener('click', (event) => {
-    if (event.target.innerText === 'Add Pokemon') {
+    if (event.target.innerText === 'Add Pokemon' && event.target.nextElementSibling.children.length < 6) {
         fetch(POKEMONS_URL, reqObj(event))
         .then(resp => resp.json())
+        .then(pokemon => {
+            const ul = event.target.nextElementSibling
+            const liList = document.createElement('li')
+            liList.innerHTML = `${pokemon.nickname} (${pokemon.species}) <button class="release" data-pokemon-id=${pokemon.id}>Release</button>`
+            ul.appendChild(liList)
+        })
+    }
+     else if (event.target.innerText === 'Release') {
+        fetch(`http://localhost:3000/pokemons/${event.target.dataset.pokemonId}`, deleteReq)
+        .then(resp => resp.json())
         .then(pokemon => console.log(pokemon))
-    } else if (event.target.innerText === 'Release') {
-        //Do something here
+        event.target.parentElement.remove()
     }
 })
 
-
+const deleteReq = {
+    method: 'DELETE',
+    headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+    }
+}
 
 const reqObj = (event) => {
     
